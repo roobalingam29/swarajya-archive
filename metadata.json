@@ -1,0 +1,6 @@
+{
+  "name": "Swarajya Archive",
+  "description": "India's Freedom Struggle Digital Repository - An authenticated historical archive, interactive timeline, map, and AI research assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
