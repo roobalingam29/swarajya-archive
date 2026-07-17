@@ -61,8 +61,9 @@ export default function AssistantTab() {
       });
 
       if (!response.ok) {
-        throw new Error("Server responded with an error status.");
-      }
+  const err = await response.json();
+  throw new Error(err.error || "Unknown server error");
+}
 
       const data = await response.json();
       
@@ -74,64 +75,25 @@ export default function AssistantTab() {
       };
 
       setMessages(prev => [...prev, assistantMsg]);
-    } catch (err: any) {
-      console.error("AI chat error:", err);
-      
-      // Smart Fallback Local Response Engine
-      let fallbackText = "";
-      const lowerText = textToSend.toLowerCase();
+    } 
+     catch (err: any) {
+  console.error("AI chat error:", err);
 
-      if (lowerText.includes("salt march") || lowerText.includes("salt satyagraha") || lowerText.includes("dandi")) {
-        fallbackText = `The Salt March, also known as the Dandi Satyagraha, was launched on March 12, 1930. 
-
-Key Participants:
-• Mahatma Gandhi (who led the 24-day walk from Sabarmati to Dandi)
-• Sarojini Naidu (who famously co-led the Dharasana Salt Works satyagraha following Gandhi's arrest)
-• Sardar Vallabhbhai Patel (who mobilized Gujarat's villagers ahead of the march routes)
-• C. Rajagopalachari (who led the parallel salt march in Vedaranyam, Tamil Nadu)
-
-Significance:
-It became a historic symbol of nonviolent defiance, showing how a humble daily resource like salt could unite a nation of millions against imperial monopolistic taxes.`;
-      } else if (lowerText.includes("tamil nadu")) {
-        fallbackText = `Tamil Nadu played a vital, early role in resisting colonial expansion:
-
-Key Freedom Fighters from Tamil Nadu:
-1. Rani Velu Nachiyar: The Sivaganga queen who became the first female monarch to wage active war and defeat the East India Company in 1780.
-2. V. O. Chidambaram Pillai: Known as Kappalottiya Thamizhan, he established the Swadeshi Steam Navigation Company to challenge British shipping monopolies.
-3. Subramania Bharati: A legendary poet and nationalist whose fiery verses galvanized public support for independent Swaraj.
-4. C. Rajagopalachari: A trusted statesman who led the Vedaranyam Salt Satyagraha in 1930.`;
-      } else if (lowerText.includes("quit india")) {
-        fallbackText = `The Quit India Movement was launched on August 8, 1942, at the Bombay session of the All India Congress Committee. 
-
-Core Details:
-• Clarion Call: Mahatma Gandhi gave the historical mantra "Do or Die" (Karo ya Maro).
-• Leadership: Despite the immediate arrest of senior leaders (Gandhi, Patel, Nehru), grassroots leaders like Aruna Asaf Ali, Jayaprakash Narayan, and Ram Manohar Lohia carried out intense underground campaigns.
-• Impact: It proved to the British Empire that ruling India was no longer sustainable or military-wise viable, laying the immediate groundwork for post-war transfer of power in 1947.`;
-      } else {
-        fallbackText = `Thank you for your historical query about "${textToSend}". 
-
-As our PostgreSQL database is currently in pre-migration staging (Module 1), I have registered your request. Here is an authenticated summary:
-• Topic: Researching India's Freedom Struggle
-• Context: The period of study spans from the Battle of Plassey (1757) to the adoption of the Sovereign Democratic Constitution (1950).
-• Sources: Archival Records cataloged at National Archives of India under Section 4(a) registries.
-
-Please feel free to ask specifically about the "Salt March", "Quit India", or "Fighters from Tamil Nadu" to review high-fidelity, peer-reviewed archival details right now!`;
-      }
-
-      const fallbackMsg: ChatMessage = {
-        id: `ast_${Date.now()}`,
-        sender: 'assistant',
-        text: fallbackText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      setMessages(prev => [...prev, fallbackMsg]);
-    } finally {
-      setIsLoading(false);
-    }
+  const assistantMsg: ChatMessage = {
+    id: `ast_${Date.now()}`,
+    sender: "assistant",
+    text: `❌ API Error:\n\n${err.message}`,
+    timestamp: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   };
 
-  return (
+  setMessages((prev) => [...prev, assistantMsg]);
+} finally {
+  setIsLoading(false);
+}
+ return(
     <div className="mx-auto max-w-4xl space-y-6">
       
       {/* Title */}
